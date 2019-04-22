@@ -40,34 +40,34 @@ def create_model():
 
 def train_validate(model,steps):
     # fit and validate
-    history = model.fit(trn_i,trn_l,epochs=steps,validation_data=(val_i,val_l))
+    history = model.fit(trn_i,trn_l,epochs=steps)
     # save entire model as hdf5
     model_path = "models/cnn.h5"
     model.save(model_path)
     # metrics
     acc = history.history['accuracy']
-    val_acc = history.history['val_accuracy']
     loss = history.history['loss']
-    val_loss = history.history['val_loss']
     # graph accuracy
     plt.figure(figsize=(8, 8))
     plt.subplot(2, 1, 1)
     plt.plot(acc, label='Training Accuracy')
-    plt.plot(val_acc, label='Validation Accuracy')
     plt.legend(loc='lower right')
     plt.ylabel('Accuracy')
     plt.ylim([min(plt.ylim()),1])
-    plt.title('Training and Validation Accuracy(Top) and Loss(Bottom)')
+    plt.title('Training Metrics')
     plt.xlabel('epoch')
     # graph loss
     plt.subplot(2, 1, 2)
     plt.plot(loss, label='Training Loss')
-    plt.plot(val_loss, label='Validation Loss')
     plt.legend(loc='upper right')
     plt.ylabel('Cross Entropy')
     plt.ylim([0,1.0])
     plt.xlabel('epoch')
     plt.show()
+    # model validation
+    val_loss, val_acc = model.evaluate(val_i, val_l)
+    print("Validation Loss =",val_loss)
+    print("Validation Accuracy=",val_acc)
 
 if "-t" in sys.argv:
     epochs = 0
