@@ -58,7 +58,7 @@ def create_model():
     return model
 
 def train_validate(model,steps):
-    global model_path
+    global model_path, trn_i, trn_l, val_i, val_l
     # fit and validate
     history = model.fit(trn_i,trn_l,epochs=steps,validation_data=(val_i,val_l))
     # save entire model as hdf5
