@@ -16,3 +16,7 @@
 ### For others
 
 -pip packages `pip3 install -r nogpu.txt`
+
+## Import images
+
+`./importImage.sh <jpg/png file to import with path> <filename with extension> <label>`

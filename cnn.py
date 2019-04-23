@@ -19,7 +19,8 @@ val_i = None
 val_l = None
 model = None
 model_path = "models/cnn.h5"
-imagePath = os.getcwd()+'/testImages/'
+imagePath = os.getcwd()+'/testImages/images/'
+lablePath = os.getcwd()+'testImages/labels'
 image_files = []
 
 def getImages():

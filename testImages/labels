@@ -1,0 +1,5 @@
+images,labels
+testImages/images/one.png,1
+testImages/images/four.png,4
+testImages/images/two.png,2
+testImages/images/a.png,NOT A DIGIT
