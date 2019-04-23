@@ -11,7 +11,7 @@ import matplotlib.image as mpimg
 from PIL import Image
 
 logging.disable(logging.WARNING)
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
 
 trn_i = None
 trn_l = None
@@ -116,9 +116,11 @@ def predict(model):
             print(_,np.argmax(p))
         else:
             print(_,"NOT A DIGIT")
+        '''    
         for i in p:
             for j in i:
                 print("%.10f"%j)
+        '''
 
 if "-t" in sys.argv:
     epochs = 0
@@ -139,6 +141,4 @@ if "-p" in sys.argv:
     # fetch saved model
     model = models.load_model(model_path)
     # predict
-    # predict(model)
-    loadDataset()
-    modelMetrics(val_i,val_l,model)
+    predict(model)
