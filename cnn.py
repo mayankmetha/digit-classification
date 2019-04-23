@@ -2,6 +2,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 import os
 import sys
+import logging
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras import datasets, models, layers
@@ -9,7 +10,8 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from PIL import Image
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+logging.disable(logging.WARNING)
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 trn_i = None
 trn_l = None
@@ -53,13 +55,25 @@ def create_model():
     # output layer
     model.add(layers.Flatten())
     model.add(layers.Dense(64, activation='relu'))
-    model.add(layers.Dense(11, activation='softmax'))
+    model.add(layers.Dense(10, activation='softmax'))
     model.compile(optimizer='adam',loss='sparse_categorical_crossentropy',metrics=['accuracy'])
     return model
 
+def modelMetrics(data,labels,model):
+    #confusion matrix
+    pred = []
+    x = model.predict(data)
+    [pred.append(np.argmax(_)) for _ in x]
+    cm = tf.math.confusion_matrix(labels,pred,num_classes=tf.cast(tf.constant(10,tf.int32),tf.int32))
+    print("Confusion Matrix:")
+    for row in cm:
+        for cell in row:
+            print(" %5d "%cell,end="")
+        print()
+
 def train_validate(model,steps):
     global model_path, trn_i, trn_l, val_i, val_l
-    # fit and validate
+    # fit model
     history = model.fit(trn_i,trn_l,epochs=steps,validation_data=(val_i,val_l))
     # save entire model as hdf5
     model.save(model_path)
@@ -72,25 +86,25 @@ def train_validate(model,steps):
     plt.figure(figsize=(8, 8))
     plt.subplot(2, 1, 1)
     plt.plot(acc, label='Training Accuracy')
-    plt.plot(val_acc, label='Validation Accuracy')
     plt.legend(loc='lower right')
     plt.ylabel('Accuracy')
     plt.ylim([min(plt.ylim()),1])
-    plt.title('Training & Validation Metrics')
+    plt.title('Training Metrics')
     plt.xlabel('epoch')
     # graph loss
     plt.subplot(2, 1, 2)
     plt.plot(loss, label='Training Loss')
-    plt.plot(val_loss, label='Validation Loss')
     plt.legend(loc='upper right')
     plt.ylabel('Cross Entropy')
     plt.ylim([0,1.0])
     plt.xlabel('epoch')
     plt.show()
     # model validation
-    val_loss, val_acc = model.evaluate(val_i, val_l)
-    print("Validation Loss =",val_loss)
-    print("Validation Accuracy=",val_acc)
+    print("Model Validation:")
+    loss, acc = model.evaluate(data, labels)
+    print("Sparse Categotical Loss =",loss)
+    print("Labeling Accuracy=",acc)
+    modelMetrics(val_i,val_l,model)
 
 def predict(model):
     global image_files
@@ -101,7 +115,10 @@ def predict(model):
         if np.max(p) > 0.90:
             print(_,np.argmax(p))
         else:
-            print(_,"NOTA")
+            print(_,"NOT A DIGIT")
+        for i in p:
+            for j in i:
+                print("%.10f"%j)
 
 if "-t" in sys.argv:
     epochs = 0
@@ -122,4 +139,6 @@ if "-p" in sys.argv:
     # fetch saved model
     model = models.load_model(model_path)
     # predict
-    predict(model)
+    # predict(model)
+    loadDataset()
+    modelMetrics(val_i,val_l,model)
