@@ -100,12 +100,13 @@ def train_validate(model,steps):
     plt.ylim([0,1.0])
     plt.xlabel('epoch')
     plt.show()
+
+def evaluate_model(data,labels,model):
     # model validation
     print("Model Validation:")
     loss, acc = model.evaluate(data, labels)
     print("Sparse Categotical Loss =",loss)
     print("Labeling Accuracy=",acc)
-    modelMetrics(val_i,val_l,model)
 
 def predict(model):
     global image_files
@@ -123,6 +124,8 @@ def predict(model):
                 print("%.10f"%j)
         '''
 
+# load dataset
+loadDataset()
 if "-t" in sys.argv:
     epochs = 0
     if sys.argv[sys.argv.index("-t")+1] is not None:
@@ -130,8 +133,6 @@ if "-t" in sys.argv:
             epochs = int(sys.argv[sys.argv.index("-t")+1])
         except:
             epochs = 100
-    # load dataset
-    loadDataset()
     # create model
     model = create_model()
     model.summary()
@@ -141,5 +142,9 @@ if "-t" in sys.argv:
 if "-p" in sys.argv:
     # fetch saved model
     model = models.load_model(model_path)
+    # evaluate model
+    evaluate_model(val_i,val_l,model)
+    # confusion matrix 
+    modelMetrics(val_i,val_l,model)
     # predict
     predict(model)
