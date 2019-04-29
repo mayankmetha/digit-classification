@@ -3,6 +3,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import os
 import sys
 import logging
+import time
+from termcolor import colored
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras import datasets, models, layers
@@ -66,23 +68,24 @@ def modelMetrics(data,labels,model):
     x = model.predict(data)
     [pred.append(np.argmax(_)) for _ in x]
     cm = tf.math.confusion_matrix(labels,pred,num_classes=tf.cast(tf.constant(10,tf.int32),tf.int32))
-    print("Confusion Matrix:")
+    print(colored("Confusion Matrix:","yellow",attrs=['bold']))
     for row in cm:
         for cell in row:
-            print(" %5d "%cell,end="")
+            print(colored(" %5d "%cell,'yellow',attrs=['bold']),end="")
         print()
 
 def train_validate(model,steps):
     global model_path, trn_i, trn_l, val_i, val_l
     # fit model
-    history = model.fit(trn_i,trn_l,epochs=steps,validation_data=(val_i,val_l))
+    start = time.time()
+    history = model.fit(trn_i,trn_l,epochs=steps)
+    stop = time.time()
+    print(colored("Training time : %f min"%((stop-start)/60),'yellow',attrs=['bold']))
     # save entire model as hdf5
     model.save(model_path)
     # metrics
     acc = history.history['accuracy']
-    val_acc = history.history['val_accuracy']
     loss = history.history['loss']
-    val_loss = history.history['val_loss']
     # graph accuracy
     plt.figure(figsize=(8, 8))
     plt.subplot(2, 1, 1)
@@ -103,10 +106,10 @@ def train_validate(model,steps):
 
 def evaluate_model(data,labels,model):
     # model validation
-    print("Model Validation:")
+    print(colored("Model Validation:",'yellow',attrs=['bold']))
     loss, acc = model.evaluate(data, labels)
-    print("Sparse Categotical Loss =",loss)
-    print("Labeling Accuracy=",acc)
+    print(colored("Sparse Categotical Loss = %f"%(loss),'yellow',attrs=['bold']))
+    print(colored("Labeling Accuracy= %f"%(acc),'yellow',attrs=['bold']))
 
 def predict(model):
     global image_files
@@ -115,9 +118,9 @@ def predict(model):
         x = convertImages(_)
         p = model.predict(x)
         if np.max(p) > 0.90:
-            print(_,np.argmax(p))
+            print(colored("%s,%d"%(_,np.argmax(p)),'yellow',attrs=['bold']))
         else:
-            print(_,"NOT A DIGIT")
+            print(colored("%s,%s"%(_,"∅"),'yellow',attrs=['bold']))
         '''    
         for i in p:
             for j in i:
@@ -142,6 +145,7 @@ if "-t" in sys.argv:
 if "-p" in sys.argv:
     # fetch saved model
     model = models.load_model(model_path)
+    model.summary()
     # evaluate model
     evaluate_model(val_i,val_l,model)
     # confusion matrix 
