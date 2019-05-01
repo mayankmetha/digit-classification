@@ -2,7 +2,6 @@ images,labels
 testImages/images/one.jpg,1
 testImages/images/four.jpg,4
 testImages/images/two.jpg,2
-testImages/images/a.jpg,∅
 testImages/images/h0.jpg,0
 testImages/images/h1.jpg,1
 testImages/images/h2.jpg,2

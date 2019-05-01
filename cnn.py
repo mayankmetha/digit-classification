@@ -37,9 +37,9 @@ def convertImages(images):
     i = cv2.imread(images)
     i = cv2.cvtColor(i,cv2.COLOR_BGR2GRAY)
     T = threshold_local(i,999,offset=10,method="gaussian")
-    i = (i - T).astype("uint8")*255
+    i = (T - i).astype("uint8")*255
     img = Image.fromarray(i).resize((28,28))
-    im2arr = 1-np.array(img)/255.0
+    im2arr = np.array(img)/255.0
     im2arr = im2arr.reshape(1,28,28,1)
     return im2arr
 
