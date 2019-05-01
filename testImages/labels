@@ -1,5 +1,15 @@
 images,labels
-testImages/images/one.png,1
-testImages/images/four.png,4
-testImages/images/two.png,2
-testImages/images/a.png,NOT A DIGIT
+testImages/images/one.jpg,1
+testImages/images/four.jpg,4
+testImages/images/two.jpg,2
+testImages/images/a.jpg,∅
+testImages/images/h0.jpg,0
+testImages/images/h1.jpg,1
+testImages/images/h2.jpg,2
+testImages/images/h3.jpg,3
+testImages/images/h4.jpg,4
+testImages/images/h5.jpg,5
+testImages/images/h6.jpg,6
+testImages/images/h7.jpg,7
+testImages/images/h8.jpg,8
+testImages/images/h9.jpg,9

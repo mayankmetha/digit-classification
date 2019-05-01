@@ -11,6 +11,8 @@ from tensorflow.keras import datasets, models, layers
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from PIL import Image
+import cv2
+from skimage.filters import threshold_local
 
 logging.disable(logging.WARNING)
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
@@ -32,9 +34,12 @@ def getImages():
             image_files.append(imagePath+_)
 
 def convertImages(images):
-    img = Image.open(images).convert("L")
-    img = np.resize(img, (28,28,1))
-    im2arr = np.array(img)/255
+    i = cv2.imread(images)
+    i = cv2.cvtColor(i,cv2.COLOR_BGR2GRAY)
+    T = threshold_local(i,999,offset=10,method="gaussian")
+    i = (i - T).astype("uint8")*255
+    img = Image.fromarray(i).resize((28,28))
+    im2arr = 1-np.array(img)/255.0
     im2arr = im2arr.reshape(1,28,28,1)
     return im2arr
 
@@ -117,15 +122,19 @@ def predict(model):
     for _ in image_files:
         x = convertImages(_)
         p = model.predict(x)
+        title = ""
         if np.max(p) > 0.90:
+            title = np.argmax(p)
             print(colored("%s,%d"%(_,np.argmax(p)),'yellow',attrs=['bold']))
         else:
-            print(colored("%s,%s"%(_,"∅"),'yellow',attrs=['bold']))
-        '''    
-        for i in p:
+            title = "∅"
+            print(colored("%s,%s"%(_,"∅"),'yellow',attrs=['bold']))   
+        plt.title(title)
+        plt.imshow(np.squeeze(x),cmap='gray')
+        plt.show()
+        '''for i in p:
             for j in i:
-                print("%.10f"%j)
-        '''
+                print("%.10f"%j)'''
 
 # load dataset
 loadDataset()

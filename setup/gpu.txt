@@ -2,3 +2,5 @@ tensorflow==2.0.0-alpha0
 tensorflow-gpu==2.0.0-alpha0
 pyyaml
 h5py
+opencv-python
+scikit-image
