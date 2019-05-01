@@ -109,7 +109,7 @@ def evaluate_model(data,labels,model):
     print(colored("Model Validation:",'yellow',attrs=['bold']))
     loss, acc = model.evaluate(data, labels)
     print(colored("Sparse Categotical Loss = %f"%(loss),'yellow',attrs=['bold']))
-    print(colored("Labeling Accuracy= %f"%(acc),'yellow',attrs=['bold']))
+    print(colored("Labeling Accuracy = %f"%(acc),'yellow',attrs=['bold']))
 
 def predict(model):
     global image_files
