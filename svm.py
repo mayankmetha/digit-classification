@@ -64,7 +64,16 @@ def loadDataset():
 
 def create_model():
     #c=2,gamma=0.01,acc=0.9809,time=36.6 minutes
-    return svm.SVC(C=3,kernel='rbf',gamma=0.01,cache_size=12000,probability=True)
+    return svm.SVC(C=3,kernel='rbf',gamma=0.01,cache_size=4000,probability=True)
+
+def modelMetrics(data,labels,model):
+    predict = model.predict(data)
+    cmatrix = metrics.confusion_matrix(labels, predict)
+    print(colored("Confusion Matrix:","yellow",attrs=['bold']))
+    for row in cmatrix:
+        for cell in rows:
+            print(colored(" %5d "%cell,'yellow',attrs=['bold']),end="")
+        print()
 
 def train_model(model):
     global trn_i, trn_l
@@ -74,6 +83,17 @@ def train_model(model):
     print(colored("Training time : %f min"%((stop-start)/60),'yellow',attrs=['bold']))
     externals.joblib.dump(model,model_path)
 
+def evaluate_model(data,labels,model):
+    # model validation
+    print(colored("Model Validation:",'yellow',attrs=['bold']))
+    predict = model.predict(data)
+    acc = metrics.accuracy_score(labels, predict)
+    print(colored("Labeling Accuracy = %f"%(acc),'yellow',attrs=['bold']))
+
+def predict(model):
+    #do like cnn
+    return 0
+    
 loadDataset()
 if "-t" in sys.argv:
     # create model
@@ -82,6 +102,11 @@ if "-t" in sys.argv:
     # train model
     print(colored("Training model",'yellow',attrs=['bold']))
     train_model(model)
-    print("Predicting model")
-    predict = model.predict(val_i)
-    print( metrics.confusion_matrix(val_l, predict))
+
+if "-p" in sys.argv:
+    # fetch saved model
+    model = externals.joblib.load(model_path)
+    # evaluate model
+    evaluate_model(val_i,val_l,model)
+    # confusion matrix 
+    modelMetrics(val_i,val_l,model)
