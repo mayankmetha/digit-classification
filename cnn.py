@@ -79,7 +79,7 @@ def modelMetrics(data,labels,model):
             print(colored(" %5d "%cell,'yellow',attrs=['bold']),end="")
         print()
 
-def train_validate(model,steps):
+def train_model(model,steps):
     global model_path, trn_i, trn_l, val_i, val_l
     # fit model
     start = time.time()
@@ -149,7 +149,7 @@ if "-t" in sys.argv:
     model = create_model()
     model.summary()
     # train model
-    train_validate(model,epochs)
+    train_model(model,epochs)
 
 if "-p" in sys.argv:
     # fetch saved model
