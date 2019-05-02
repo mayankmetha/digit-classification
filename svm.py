@@ -64,7 +64,7 @@ def loadDataset():
 
 def create_model():
     #c=2,gamma=0.01,acc=0.9809,time=36.6 minutes
-    return svm.SVC(C=2,kernel='rbf',gamma=0.01,cache_size=12000,probability=True)
+    return svm.SVC(C=3,kernel='rbf',gamma=0.01,cache_size=12000,probability=True)
 
 def train_model(model):
     global trn_i, trn_l
@@ -74,12 +74,14 @@ def train_model(model):
     print(colored("Training time : %f min"%((stop-start)/60),'yellow',attrs=['bold']))
     externals.joblib.dump(model,model_path)
 
-print("Loading datasets")
 loadDataset()
-print("Creating model")
-model = create_model()
-print("Training model")
-train_model(model)
-print("Predicting model")
-predict = model.predict(val_i)
-print( metrics.confusion_matrix(val_l, predict))
+if "-t" in sys.argv:
+    # create model
+    print(colored("Creating model",'yellow',attrs=['bold']))
+    model = create_model()
+    # train model
+    print(colored("Training model",'yellow',attrs=['bold']))
+    train_model(model)
+    print("Predicting model")
+    predict = model.predict(val_i)
+    print( metrics.confusion_matrix(val_l, predict))
