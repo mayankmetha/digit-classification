@@ -66,11 +66,10 @@ def create_model():
     #c=2,gamma=0.01,acc=0.9809,time=36.6 minutes
     return svm.SVC(C=3,kernel='rbf',gamma=0.01,cache_size=4000,probability=True)
 
-def modelMetrics(data,labels,model):
-    predict = model.predict(data)
-    cmatrix = metrics.confusion_matrix(labels, predict)
+def modelMetrics(predict,labels,model):
     print(colored("Confusion Matrix:","yellow",attrs=['bold']))
-    for row in cmatrix:
+    cmatrix = metrics.confusion_matrix(labels, predict)
+    for rows in cmatrix:
         for cell in rows:
             print(colored(" %5d "%cell,'yellow',attrs=['bold']),end="")
         print()
@@ -83,10 +82,9 @@ def train_model(model):
     print(colored("Training time : %f min"%((stop-start)/60),'yellow',attrs=['bold']))
     externals.joblib.dump(model,model_path)
 
-def evaluate_model(data,labels,model):
+def evaluate_model(predict,labels,model):
     # model validation
     print(colored("Model Validation:",'yellow',attrs=['bold']))
-    predict = model.predict(data)
     acc = metrics.accuracy_score(labels, predict)
     print(colored("Labeling Accuracy = %f"%(acc),'yellow',attrs=['bold']))
 
@@ -106,7 +104,8 @@ if "-t" in sys.argv:
 if "-p" in sys.argv:
     # fetch saved model
     model = externals.joblib.load(model_path)
+    predict = model.predict(val_i)
     # evaluate model
-    evaluate_model(val_i,val_l,model)
+    evaluate_model(predict,val_l,model)
     # confusion matrix 
-    modelMetrics(val_i,val_l,model)
+    modelMetrics(predict,val_l,model)
