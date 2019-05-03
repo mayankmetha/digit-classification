@@ -64,9 +64,8 @@ def loadDataset():
     val_i = np.squeeze(val_i.reshape((10000,28*28,1)))
 
 def create_model():
-    #c=2,gamma=0.01,acc=0.9809,time=36.60 minutes
     #c=3,gamma=0.01,acc=0.9827,time=21.79 minutes
-    return svm.SVC(C=4,kernel='rbf',gamma=0.01,cache_size=4000,probability=True)
+    return svm.SVC(C=3,kernel='rbf',gamma=0.01,cache_size=4000,probability=True)
 
 def modelMetrics(predict,labels,model):
     print(colored("Confusion Matrix:","yellow",attrs=['bold']))
@@ -90,14 +89,22 @@ def evaluate_model(predict,labels,model):
     acc = metrics.accuracy_score(labels, predict)
     print(colored("Labeling Accuracy = %f"%(acc),'yellow',attrs=['bold']))
 
-def predict(model):
+def predict_model(model):
     global image_files
     getImages()
     for _ in image_files:
         x = convertImages(_)
-        p = model.predict(x)
+        p = model.predict_proba(x)
         title = ""
-        print(p)
+        if np.max(p) > 0.5:
+            title = np.argmax(p)
+            print(colored("%s,%d"%(_,np.argmax(p)),'yellow',attrs=['bold']))
+        else:
+            title = "∅"
+            print(colored("%s,%s"%(_,"∅"),'yellow',attrs=['bold']))   
+        plt.title(title)
+        plt.imshow(np.squeeze(x.reshape(28,28)),cmap='gray')
+        plt.show()
     
 loadDataset()
 if "-t" in sys.argv:
@@ -110,10 +117,11 @@ if "-t" in sys.argv:
 
 if "-p" in sys.argv:
     # fetch saved model
-    model = externals.joblib.load(model_path)
-    predict = model.predict(val_i)
+    val = externals.joblib.load(model_path)
+    predict = val.predict(val_i)
     # evaluate model
-    evaluate_model(predict,val_l,model)
+    evaluate_model(predict,val_l,val)
     # confusion matrix 
-    modelMetrics(predict,val_l,model)
-    #predict(model)
+    modelMetrics(predict,val_l,val)
+    model = externals.joblib.load(model_path)
+    predict_model(model)

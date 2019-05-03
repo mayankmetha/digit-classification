@@ -3,3 +3,5 @@ pyyaml
 h5py
 opencv-python
 scikit-image
+pillow
+scikit-learn
