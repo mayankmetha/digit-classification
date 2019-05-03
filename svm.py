@@ -44,6 +44,7 @@ def convertImages(images):
     img = Image.fromarray(i).resize((28,28))
     im2arr = np.array(img)/255.0
     im2arr = np.squeeze(im2arr.reshape(1,28*28,1,1))
+    im2arr = im2arr.reshape(1,28*28)
     return im2arr
 
 def loadDataset():
@@ -63,8 +64,9 @@ def loadDataset():
     val_i = np.squeeze(val_i.reshape((10000,28*28,1)))
 
 def create_model():
-    #c=2,gamma=0.01,acc=0.9809,time=36.6 minutes
-    return svm.SVC(C=3,kernel='rbf',gamma=0.01,cache_size=4000,probability=True)
+    #c=2,gamma=0.01,acc=0.9809,time=36.60 minutes
+    #c=3,gamma=0.01,acc=0.9827,time=21.79 minutes
+    return svm.SVC(C=4,kernel='rbf',gamma=0.01,cache_size=4000,probability=True)
 
 def modelMetrics(predict,labels,model):
     print(colored("Confusion Matrix:","yellow",attrs=['bold']))
@@ -89,8 +91,13 @@ def evaluate_model(predict,labels,model):
     print(colored("Labeling Accuracy = %f"%(acc),'yellow',attrs=['bold']))
 
 def predict(model):
-    #do like cnn
-    return 0
+    global image_files
+    getImages()
+    for _ in image_files:
+        x = convertImages(_)
+        p = model.predict(x)
+        title = ""
+        print(p)
     
 loadDataset()
 if "-t" in sys.argv:
@@ -109,3 +116,4 @@ if "-p" in sys.argv:
     evaluate_model(predict,val_l,model)
     # confusion matrix 
     modelMetrics(predict,val_l,model)
+    #predict(model)
