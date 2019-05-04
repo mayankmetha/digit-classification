@@ -18,7 +18,6 @@ from sklearn import svm, metrics, externals
 
 logging.disable(logging.WARNING)
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
-os.environ['OMP_NUM_THREADS'] = '4'
 
 trn_i = []
 trn_l = None
@@ -65,7 +64,7 @@ def loadDataset():
 
 def create_model():
     #c=3,gamma=0.01,acc=0.9827,time=21.79 minutes
-    return svm.SVC(C=3,kernel='rbf',gamma=0.01,cache_size=4000,probability=True)
+    return svm.SVC(C=3,kernel='rbf',gamma=0.05,cache_size=4000,probability=True)
 
 def modelMetrics(predict,labels,model):
     print(colored("Confusion Matrix:","yellow",attrs=['bold']))
