@@ -14,46 +14,71 @@ from PIL import Image
 import cv2
 from skimage.filters import threshold_local
 
+#to remove general warnings
 logging.disable(logging.WARNING)
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
+#to remove tensorflow logs
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1' 
 
+#variables(trn - train, val - vlidation, i -img , l- labels)
 trn_i = None
 trn_l = None
 val_i = None
 val_l = None
 model = None
+
+
 model_path = "models/cnn.h5"
 imagePath = os.getcwd()+'/testImages/images/'
 lablePath = os.getcwd()+'testImages/labels'
+
+#list to store images
 image_files = []
 
+#to retrieve img path/name from file sys
 def getImages():
     global image_files, imagePath
+    #check inside dir
     for _ in os.listdir(imagePath):
+        #check if its a file
         if os.path.isfile(imagePath+_):
+            #if yes, append to list
             image_files.append(imagePath+_)
 
+
+#fun to convert jpeg to numpy array
 def convertImages(images):
+    # read img
     i = cv2.imread(images)
+    #convert rgb to grey using opencv2
     i = cv2.cvtColor(i,cv2.COLOR_BGR2GRAY)
     T = threshold_local(i,999,offset=10,method="gaussian")
+    #uint8 - unsigned int 8 bit)
     i = (T - i).astype("uint8")*255
+    #resize input img in array (i)
     img = Image.fromarray(i).resize((28,28))
+    #minist range is 0 - 1, so each pxl of an image is retrived from img to numpy and divide by 255 to retain that range
     im2arr = np.array(img)/255.0
+    #(no of imgs,ht, wdt, color channel)
     im2arr = im2arr.reshape(1,28,28,1)
     return im2arr
 
+#load minist dataset for train n test
 def loadDataset():
     global trn_i, trn_l, val_i, val_l
+    #cmd to load minist dataset
     mnist = datasets.mnist
+    #load seperate packages for train and val
     (trn_i, trn_l), (val_i, val_l) = mnist.load_data()
     trn_i = trn_i.reshape((60000, 28, 28, 1))
     val_i = val_i.reshape((10000, 28, 28, 1))
     trn_i, val_i = trn_i/255.0, val_i/255.0
 
+
+#build neural network model
 def create_model():
+
     model = models.Sequential()
-    # input layer
+    # input layer(filter size, stride, )
     model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=(28, 28, 1)))
     # hidden layers
     model.add(layers.MaxPooling2D((2, 2)))

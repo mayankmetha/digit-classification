@@ -42,9 +42,11 @@ def convertImages(images):
     i = (T - i).astype("uint8")*255
     img = Image.fromarray(i).resize((28,28))
     im2arr = np.array(img)/255.0
+    #squeeze - removes unwanted dimensions. (28*28,1 - n^2,1 (1D))
     im2arr = np.squeeze(im2arr.reshape(1,28*28,1,1))
     im2arr = im2arr.reshape(1,28*28)
     return im2arr
+
 
 def loadDataset():
     global trn_i, trn_l, val_i, val_l
@@ -54,17 +56,26 @@ def loadDataset():
     v_i = v_i.reshape((10000, 28, 28, 1))
     t_i, v_i = t_i/255.0, v_i/255.0
     for i in range(0,60000):
+        #retrieve individual img and squeeze
         trn_i.append(np.squeeze(t_i[i]))
     for i in range(0,10000):
         val_i.append(np.squeeze(v_i[i]))
+
     trn_i = np.array(trn_i)
     val_i = np.array(val_i)
+
+    #squeeze to remove any extra dimensions
     trn_i = np.squeeze(trn_i.reshape((60000,28*28,1)))
     val_i = np.squeeze(val_i.reshape((10000,28*28,1)))
 
+
+
 def create_model():
     #c=3,gamma=0.01,acc=0.9827,time=21.79 minutes
+    # c = correction factor,cache-sz = ram size
     return svm.SVC(C=3,kernel='rbf',gamma=0.01,cache_size=4000,probability=True)
+
+
 
 def modelMetrics(predict,labels,model):
     print(colored("Confusion Matrix:","yellow",attrs=['bold']))
